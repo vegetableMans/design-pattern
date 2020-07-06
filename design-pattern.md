@@ -629,4 +629,185 @@ public class BridgeDemo {
 
 ![](http://119.3.236.138:9090/images/2020-07-06-11-57-13-image.png)
 
+## 七、过滤器模式  --结构型模式
+
+直接看代码 很简单
+
+```java
+public interface Criteria {
+
+    List<Person> meetCriteria(List<Person> personList);
+
+}
+```
+
+```java
+public class AgeCriteria implements Criteria{
+    @Override
+    public List<Person> meetCriteria(List<Person> personList) {
+        return personList.stream().filter(person -> person.getAge() > 18).collect(Collectors.toList());
+    }
+}
+```
+
+```java
+public class MaleCriteria implements Criteria {
+
+    @Override
+    public List<Person> meetCriteria(List<Person> personList) {
+        return personList.stream().filter(person -> person.getSex().equals("male")).collect(Collectors.toList());
+    }
+}
+```
+
+```java
+public class Person {
+    private int age;
+    private String sex;
+
+    public Person(int age, String sex) {
+        this.age = age;
+        this.sex = sex;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public String getSex() {
+        return sex;
+    }
+
+    @Override
+    public String toString() {
+        return "Person{" +
+                "age=" + age +
+                ", sex='" + sex + '\'' +
+                '}';
+    }
+}
+```
+
+```java
+public class FilterDemo {
+    public static void main(String[] args) {
+        List<Person> personList = Arrays.asList(new Person(20, "male"),
+                new Person(17, "female"),
+                new Person(20, "female"));
+        AgeCriteria ageCriteria = new AgeCriteria();
+        //过滤年龄大于18岁的
+        System.out.println(ageCriteria.meetCriteria(personList));
+        MaleCriteria maleCriteria = new MaleCriteria();
+        //过滤男人
+        System.out.println(maleCriteria.meetCriteria(personList));
+    }
+}
+```
+
+## 八、迭代器模式  --行为型模式
+
+**用于顺序访问集合对象**
+
+直接看栗子：
+
+```java
+public interface Iterator {
+    boolean hasNext();
+
+    Object next();
+}
+```
+
+```java
+public interface Container {
+    Iterator getIterator();
+}
+```
+
+```java
+public class NameRepository implements Container {
+
+    private String names[];
+
+    public void setNames(String[] names) {
+        this.names = names;
+    }
+
+
+    @Override
+    public Iterator getIterator() {
+        return new nameIterator();
+    }
+
+    private class nameIterator implements Iterator{
+
+        private int index = 0;
+        @Override
+        public boolean hasNext() {
+            if(index < names.length)
+                return true;
+            return false;
+        }
+
+        @Override
+        public Object next() {
+            if (hasNext()){
+                return names[index++];
+            }
+            return null;
+        }
+    }
+}
+```
+
+```java
+public class IteratorDemo {
+    public static void main(String[] args) {
+        String names[] = {"jack","mark","tom","tony"};
+        NameRepository nameRepository = new NameRepository();
+        nameRepository.setNames(names);
+        Iterator iterator = nameRepository.getIterator();
+        while (iterator.hasNext()){
+            System.out.println(iterator.next());
+        }
+    }
+}
+```
+
+![](http://119.3.236.138:9090/images/2020-07-06-22-56-36-image.png)
+
+## 九、中介者模式  --行为型模式
+
+![](https://www.runoob.com/wp-content/uploads/2014/08/mediator_pattern_uml_diagram.jpg)
+
+```java
+public class User {
+    private String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public User(String name) {
+        this.name = name;
+    }
+
+    public void sendMsg(String msg){
+        ChatRoom.sendMsg(this,msg);
+    }
+}
+```
+
+```java
+public class ChatRoom {
+    public static void sendMsg(User user,String msg){
+        System.out.println(new Date().toString() + user.getName() + msg);
+    }
+}
+```
+
+结果：
+
+![](http://119.3.236.138:9090/images/2020-07-06-22-58-44-image.png)
+
 
