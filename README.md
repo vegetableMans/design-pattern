@@ -810,4 +810,210 @@ public class ChatRoom {
 
 ![](http://119.3.236.138:9090/images/2020-07-06-22-58-44-image.png)
 
+## 十、外观模式  --结构型模式
+
+为多个复杂的子系统提供一个一致的接口
+
+![](http://c.biancheng.net/uploads/allimg/181115/3-1Q115152143509.gif)
+
+栗子：
+
+```java
+public class Facade {
+    private System01 system01;
+    private System02 system02;
+
+    public Facade(System01 system01, System02 system02) {
+        this.system01 = system01;
+        this.system02 = system02;
+    }
+
+    public void system01Method(){
+        system01.method();
+    }
+    public void system02Method(){
+        system02.method();
+    }
+}
+```
+
+```java
+public class System01 {
+    public void method(){
+        System.out.println("system01 's method");
+    }
+}
+```
+
+```java
+public class System02 {
+    public void method(){
+        System.out.println("system02 's method");
+    }
+}
+```
+
+```java
+public class FacadeDemo {
+    public static void main(String[] args) {
+        Facade facade = new Facade(new System01(),new System02());
+        facade.system01Method();
+        facade.system02Method();
+    }
+}
+```
+
+
+
+![](http://119.3.236.138:9090/images/2020-07-07-11-08-58-image.png)
+
+## 十一、建造者模式  --创建型模式
+
+**建造者（Builder）模式由产品、抽象建造者、具体建造者、指挥者等 4 个要素构成**
+
+![](http://c.biancheng.net/uploads/allimg/181114/3-1Q1141H441X4.gif)
+
+栗子：
+
+![](http://c.biancheng.net/uploads/allimg/181114/3-1Q1141H553419.gif)
+
+```java
+/**
+ * 产品
+ */
+public class Product {
+    private String sofa;
+    private String wall;
+    private String tv;
+
+    public void setSofa(String sofa) {
+        this.sofa = sofa;
+    }
+
+    public void setWall(String wall) {
+        this.wall = wall;
+    }
+
+    public void setTv(String tv) {
+        this.tv = tv;
+    }
+
+    public void show() {
+        System.out.println(
+                "Product{" +
+                        "sofa='" + sofa + '\'' +
+                        ", wall='" + wall + '\'' +
+                        ", tv='" + tv + '\'' +
+                        '}'
+        );
+    }
+}
+```
+
+```java
+/**
+ * 抽象建造者
+ */
+public abstract class Decorator {
+
+    protected Product product = new Product();
+
+    public abstract void buildWall();
+
+    public abstract void buildSofa();
+
+    public abstract void buildTv();
+
+    public Product getResult(){
+        return product;
+    }
+}
+```
+
+```java
+/**
+ * 具体建造者
+ */
+public class ConcreteDecorator01 extends Decorator {
+
+    @Override
+    public void buildWall() {
+        product.setWall("01's wall");
+    }
+
+    @Override
+    public void buildSofa() {
+        product.setSofa("01's sofa");
+    }
+
+    @Override
+    public void buildTv() {
+        product.setTv("01's tv");
+    }
+}
+
+```
+
+```java
+/**
+ * 具体建造者
+ */
+public class ConcreteDecorator02 extends Decorator {
+    @Override
+    public void buildWall() {
+        product.setWall("02's wall");
+    }
+
+    @Override
+    public void buildSofa() {
+        product.setSofa("02's sofa");
+    }
+
+    @Override
+    public void buildTv() {
+        product.setTv("02's tv");
+    }
+}
+```
+
+```java
+/**
+ * 指挥者
+ */
+public class Director {
+    private Decorator builder;
+
+    public Director(Decorator builder) {
+        this.builder = builder;
+    }
+
+    public Product decorate(){
+        builder.buildSofa();
+        builder.buildTv();
+        builder.buildWall();
+        return builder.getResult();
+    }
+}
+```
+
+```java
+public class BuilderDemo {
+    public static void main(String[] args) {
+        Director director01 = new Director(new ConcreteDecorator01());
+        Director director02 = new Director(new ConcreteDecorator02());
+        Product product01 = director01.decorate();
+        Product product02 = director02.decorate();
+
+        product01.show();
+
+        product02.show();
+
+    }
+}
+```
+
+结果：
+
+![](http://119.3.236.138:9090/images/2020-07-07-12-27-22-image.png)
+
 
