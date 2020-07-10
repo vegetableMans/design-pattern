@@ -1085,7 +1085,6 @@ public class Composite implements Component {
         children.stream().forEach(c -> c.operation());
     }
 }
-
 ```
 
 ```java
@@ -1169,7 +1168,6 @@ public class Leaf implements Component {
         System.out.println(name + "被访问");
     }
 }
-
 ```
 
 ```java
@@ -1192,7 +1190,6 @@ public class Composite implements Component {
         children.stream().forEach(c -> c.operation());
     }
 }
-
 ```
 
 ```java
@@ -1215,11 +1212,122 @@ public class CompositeDemo {
 
     }
 }
-
 ```
 
 结果：
 
 ![](http://119.3.236.138:9090/images/2020-07-10-13-55-29-image.png)
 
+## 十三、享元模式
 
+**通过共享已经存在的对象来大幅减少需要创建的对象数量，提高系统资源的利用率**
+
+**享元模式中的角色**
+
+1. 抽象享元角色（Flyweight）:是所有的具体享元类的基类，为具体享元规范需要实现的公共接口，非享元的外部状态以参数的形式通过方法传入。
+2. 具体享元（Concrete Flyweight）角色：实现抽象享元角色中所规定的接口。
+3. 非享元（Unsharable Flyweight)角色：是不可以共享的外部状态，它以参数的形式注入具体享元的相关方法中。
+4. 享元工厂（Flyweight Factory）角色：负责创建和管理享元角色。当客户对象请求一个享元对象时，享元工厂检査系统中是否存在符合要求的享元对象，如果存在则提供给客户；如果不存在的话，则创建一个新的享元对象。
+
+
+
+- 享元模式中的两种状态：
+  
+  - 内部状态：不会随环境的改变而改变的共享部分
+  
+  - 外部状态： 会改变的不能共享的部分
+  
+  - 享元模式的实现关键就是要区分这两种状态，并将外部状态外部化（外部状态单独放到一个类中）
+
+![](http://c.biancheng.net/uploads/allimg/181115/3-1Q115161342242.gif)
+
+栗子：
+
+```java
+/**
+ * 抽象享元
+ */
+public interface Flyweight {
+    void operation(UnSharedConcreteFlyweight unSharedConcreteFlyWeight);
+}
+```
+
+```java
+public class ConcreteFlyweight implements Flyweight {
+
+    private String key;
+
+    public ConcreteFlyweight(String key) {
+        System.out.println("具体享元 " + key + "被创建");
+        this.key = key;
+    }
+
+    @Override
+    public void operation(UnSharedConcreteFlyweight unSharedConcreteFlyWeight) {
+        System.out.println("具体享元 " + key + "被调用");
+        System.out.println("非享元中的数据为 ： " + unSharedConcreteFlyWeight.getInfo());
+    }
+}
+```
+
+```java
+/**
+ * 非享元角色
+ */
+public class UnSharedConcreteFlyweight {
+    private String info;
+
+    public UnSharedConcreteFlyweight(String info) {
+        this.info = info;
+    }
+
+    public String getInfo() {
+        return info;
+    }
+
+    public void setInfo(String info) {
+        this.info = info;
+    }
+}
+```
+
+```java
+/**
+ * 享元工厂角色
+ */
+public class FlyweightFactory {
+    private HashMap<String,Flyweight> flyweights= new HashMap<String,Flyweight>();
+
+    public Flyweight getFlyweight(String key){
+        Flyweight flyweight = flyweights.get(key);
+        if (flyweight == null){
+            System.out.println("具体享元 " + key + "不存在   正在创建");
+            flyweight = new ConcreteFlyweight(key);
+            flyweights.put(key,flyweight);
+            return flyweight;
+        }
+        System.out.println("具体享元 " + key + "已存在");
+        return flyweight;
+    }
+}
+```
+
+```java
+public class FlyweightDemo {
+    public static void main(String[] args) {
+        FlyweightFactory flyweightFactory = new FlyweightFactory();
+        flyweightFactory.getFlyweight("a");
+        flyweightFactory.getFlyweight("a");
+        Flyweight a = flyweightFactory.getFlyweight("a");
+        flyweightFactory.getFlyweight("b");
+        flyweightFactory.getFlyweight("c");
+        a.operation(new UnSharedConcreteFlyweight("hello"));
+        a.operation(new UnSharedConcreteFlyweight("world"));
+    }
+}
+```
+
+结果：
+![](http://119.3.236.138:9090/images/2020-07-10-22-27-19-image.png)
+
+**明天更新享元模式的具体例子**
