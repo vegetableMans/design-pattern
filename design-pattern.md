@@ -863,8 +863,6 @@ public class FacadeDemo {
 }
 ```
 
-
-
 ![](http://119.3.236.138:9090/images/2020-07-07-11-08-58-image.png)
 
 ## 十一、建造者模式  --创建型模式
@@ -951,7 +949,6 @@ public class ConcreteDecorator01 extends Decorator {
         product.setTv("01's tv");
     }
 }
-
 ```
 
 ```java
@@ -1015,5 +1012,214 @@ public class BuilderDemo {
 结果：
 
 ![](http://119.3.236.138:9090/images/2020-07-07-12-27-22-image.png)
+
+## 十二、组合模式  --结构型模式
+
+**将对象组合成树状的层次结构的模式，使得用户对单个对象和组合对象具有一致的访问性**
+
+- 组合模式中的角色
+  
+  - 抽象构件（Component）角色
+    
+    - 为树叶和树枝提供公共接口
+  
+  - 树叶构件（Leaf）角色
+    
+    - 组合中的叶子节点对象  实现抽象构件提供的接口
+  
+  - 树枝构件（Composite）角色
+    
+    - 组合中的分支节点对象  实现抽象构件提供的接口
+
+- 组合模式又分为两种模式
+  
+  - 透明式
+    
+    - 简单来说就是 树叶和树枝构件基本是一样的 但是由于都实现了抽象构件提供的的方法，导致树叶构件多了逻辑上本应该没有的 add，remove方法，会带来一些安全性问题。
+    
+    - ![](http://c.biancheng.net/uploads/allimg/181115/3-1Q1151G62L17.gif)
+  
+  - 安全式
+    
+    - 将管理子构件的方法移动到树枝构件中，避免了透明式模式中的安全性问题
+    
+    - ![](http://c.biancheng.net/uploads/allimg/181115/3-1Q1151GF5221.gif)
+
+- 栗子：（透明式）
+
+```java
+/**
+ * 抽象构件
+ */
+public interface Component {
+
+    void add(Component c);
+
+    void remove(Component c);
+
+    void operation();
+
+}
+```
+
+```java
+/**
+ * 树枝构件
+ */
+public class Composite implements Component {
+
+    private List<Component> children = new ArrayList<>();
+
+    @Override
+    public void add(Component c) {
+        children.add(c);
+    }
+
+    @Override
+    public void remove(Component c) {
+        children.remove(c);
+    }
+
+    @Override
+    public void operation() {
+        children.stream().forEach(c -> c.operation());
+    }
+}
+
+```
+
+```java
+/**
+ * 树叶构件
+ */
+public class Leaf implements Component {
+    private String name;
+
+    public Leaf(String name) {
+        this.name = name;
+    }
+
+    /**
+     * 在透明式中
+     * 由于树枝和树叶构件都实现相同的方法，导致树叶中多了逻辑上不应该有的方法
+     * @param c
+     */
+    @Override
+    public void add(Component c) {
+
+    }
+
+    @Override
+    public void remove(Component c) {
+
+    }
+
+    @Override
+    public void operation() {
+        System.out.println("叶子 " + name + "被访问");
+    }
+}
+```
+
+```java
+public class CompositeDemo {
+    public static void main(String[] args) {
+        Component c1 = new Composite();
+        Component c2 = new Composite();
+        Component l1 = new Leaf("1号叶子");
+        Component l2 = new Leaf("2号叶子");
+        Component l3 = new Leaf("3号叶子");
+
+        c1.add(l1);
+        c2.add(l2);
+        c2.add(l3);
+        c1.add(c2);
+        c1.operation();
+    }
+}
+```
+
+![](http://119.3.236.138:9090/images/2020-07-10-13-45-13-image.png)
+
+栗子：（安全式）
+
+```java
+/**
+ * 抽象构件
+ */
+public interface Component {
+    void operation();
+}
+```
+
+```java
+/**
+ * 叶子构件
+ */
+public class Leaf implements Component {
+
+    private String name;
+
+    public Leaf(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public void operation() {
+        System.out.println(name + "被访问");
+    }
+}
+
+```
+
+```java
+/**
+ * 树枝构件
+ */
+public class Composite implements Component {
+
+    private List<Component> children = new ArrayList();
+
+    public void add(Component c){
+        children.add(c);
+    }
+
+    public void remove(Component c){
+        children.remove(c);
+    }
+    @Override
+    public void operation() {
+        children.stream().forEach(c -> c.operation());
+    }
+}
+
+```
+
+```java
+public class CompositeDemo {
+    public static void main(String[] args) {
+        Component c1 = new Composite();
+        Component c2 = new Composite();
+
+        Component l1 = new Leaf("一号叶子");
+        Component l2 = new Leaf("二号叶子");
+        Component l3 = new Leaf("三号叶子");
+
+        ((Composite)c1).add(l1);
+        ((Composite)c2).add(l2);
+        ((Composite)c2).add(l3);
+        ((Composite)c1).add(c2);
+
+        c1.operation();
+
+
+    }
+}
+
+```
+
+结果：
+
+![](http://119.3.236.138:9090/images/2020-07-10-13-55-29-image.png)
 
 
