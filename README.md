@@ -1327,4 +1327,54 @@ public class FlyweightDemo {
 结果：
 ![](http://119.3.236.138:9090/images/2020-07-10-22-27-19-image.png)
 
-**明天更新享元模式的具体例子**
+## 十四、模板方法模式  --行为型模式
+
+**定义一个操作中的算法骨架，而将算法的一些步骤延迟到子类中，使得子类可以不改变该算法结构的情况下重定义该算法的某些特定步骤。**
+
+![](http://c.biancheng.net/uploads/allimg/181116/3-1Q116095405308.gif)
+
+```java
+public abstract class AbstractClass {
+
+
+    public void templateMethod(){
+        SpecificMethod();
+        abstractMethod1();
+        abstractMethod2();
+    }
+
+    public void SpecificMethod() //具体方法
+    {
+        System.out.println("抽象类中的具体方法被调用...");
+    }
+    public abstract void abstractMethod1(); //抽象方法1
+    public abstract void abstractMethod2(); //抽象方法2
+}
+```
+
+```java
+public class ConcreteClass extends AbstractClass {
+
+    @Override
+    public void abstractMethod1() {
+        System.out.println("抽象方法1的实现被调用...");
+    }
+
+    @Override
+    public void abstractMethod2() {
+        System.out.println("抽象方法2的实现被调用...");
+    }
+}
+```
+
+```java
+public class TemplateDemo {
+    public static void main(String[] args) {
+        AbstractClass abstractClass = new ConcreteClass();
+        abstractClass.templateMethod();
+    }
+}
+
+```
+
+![](http://119.3.236.138:9090/images/2020-07-11-11-14-56-image.png)
