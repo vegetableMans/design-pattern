@@ -1374,7 +1374,195 @@ public class TemplateDemo {
         abstractClass.templateMethod();
     }
 }
-
 ```
 
 ![](http://119.3.236.138:9090/images/2020-07-11-11-14-56-image.png)
+
+## 十五、命令模式
+
+**将方法的请求者与方法的实现者解耦**
+
+**命令模式包含以下主要角色。**
+
+1. 抽象命令类（Command）角色：声明执行命令的接口，拥有执行命令的抽象方法 execute()。
+2. 具体命令角色（Concrete    Command）角色：是抽象命令类的具体实现类，它拥有接收者对象，并通过调用接收者的功能来完成命令要执行的操作。
+3. 实现者/接收者（Receiver）角色：执行命令功能的相关操作，是具体命令对象业务的真正实现者。
+4. 调用者/请求者（Invoker）角色：是请求的发送者，它通常拥有很多的命令对象，并通过访问命令对象来执行相关请求，它不直接访问接收者。
+
+![](http://c.biancheng.net/uploads/allimg/181116/3-1Q11611335E44.gif)
+
+```java
+package command;
+public class CommandPattern
+{
+    public static void main(String[] args)
+    {
+        Command cmd=new ConcreteCommand();
+        Invoker ir=new Invoker(cmd);
+        System.out.println("客户访问调用者的call()方法...");
+        ir.call();
+    }
+}
+//调用者
+class Invoker
+{
+    private Command command;
+    public Invoker(Command command)
+    {
+        this.command=command;
+    }
+    public void setCommand(Command command)
+    {
+        this.command=command;
+    }
+    public void call()
+    {
+        System.out.println("调用者执行命令command...");
+        command.execute();
+    }
+}
+//抽象命令
+interface Command
+{
+    public abstract void execute();
+}
+//具体命令
+class ConcreteCommand implements Command
+{
+    private Receiver receiver;
+    ConcreteCommand()
+    {
+        receiver=new Receiver();
+    }
+    public void execute()
+    {
+        receiver.action();
+    }
+}
+//接收者
+class Receiver
+{
+    public void action()
+    {
+        System.out.println("接收者的action()方法被调用...");
+    }
+}
+```
+
+栗子：
+
+```java
+/**
+ * 命令模式的实例 --> 吃早饭
+ * 抽象命令类
+ */
+public interface Breakfast {
+    void cooking();
+}
+```
+
+```java
+/**
+ * 肠粉
+ * command 角色
+ */
+public class ChangFen implements Breakfast{
+
+    private ChangFenChef changFenChef;
+
+    public ChangFen() {
+        this.changFenChef = new ChangFenChef();
+    }
+
+    @Override
+    public void cooking() {
+        changFenChef.cooking();
+    }
+}
+```
+
+```java
+/**
+ * 馄饨
+ * command 角色
+ */
+public class HunTun  implements Breakfast{
+
+    private HunTunChef hunTunChef;
+
+    public HunTun() {
+        this.hunTunChef = new HunTunChef();
+    }
+
+    @Override
+    public void cooking() {
+        hunTunChef.cooking();
+    }
+}
+```
+
+```java
+/**
+ * 肠粉厨师
+ * receiver 角色
+ */
+public class ChangFenChef {
+
+    public void cooking(){
+        System.out.println("肠粉厨师做出了肠粉");
+    }
+}
+
+```
+
+```java
+/**
+ * 馄饨厨师
+ * receiver 角色
+ */
+public class HunTunChef {
+
+    public void cooking(){
+        System.out.println("馄饨厨师做出了馄饨");
+    }
+}
+
+```
+
+```java
+/**
+ * 服务员
+ * 充当调用者
+ */
+public class Waiter {
+
+    private Breakfast changFen,hunTun;
+
+    public Waiter(ChangFen changFen, HunTun hunTun) {
+        this.changFen = changFen;
+        this.hunTun = hunTun;
+    }
+    public void chooseChangFen(){
+        changFen.cooking();
+    }
+    public void chooseHunTun(){
+        hunTun.cooking();
+    }
+}
+```
+
+```java
+public class BreakfastDemo {
+    public static void main(String[] args) {
+        Waiter waiter = new Waiter(new ChangFen(), new HunTun());
+        //客人要肠粉
+        waiter.chooseChangFen();
+        //客人要馄饨
+        waiter.chooseHunTun();
+    }
+}
+```
+
+结果：
+
+![](http://119.3.236.138:9090/images/2020-07-13-19-40-40-image.png)
